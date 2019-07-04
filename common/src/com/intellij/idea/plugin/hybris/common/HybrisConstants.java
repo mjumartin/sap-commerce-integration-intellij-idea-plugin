@@ -34,10 +34,6 @@ import static com.intellij.openapi.util.io.FileUtilRt.toSystemDependentName;
  */
 public interface HybrisConstants {
 
-    String IMPEX_CONSOLE_TITLE = "Hybris Impex Console";
-    String IMPEX_MONITOR_CONSOLE_TITLE = "Hybris Monitor Console";
-    String GROOVY_CONSOLE_TITLE = "Hybris Groovy Console";
-    String FLEXIBLE_SEARCH_CONSOLE_TITLE = "Hybris FS Console";
     String EXTENSION_INFO_XML = "extensioninfo.xml";
     String DOT_PROJECT = ".project";
     String SETTINGS_GRADLE = "settings.gradle";
@@ -182,15 +178,6 @@ public interface HybrisConstants {
     String READ_ONLY = "importedAsReadOnly";
 
     String DEBUG_PORT = "8000";
-    String TOMCAT_SSL_PORT_KEY = "tomcat.ssl.port";
-    String TOMCAT_HTTP_PORT_KEY = "tomcat.http.port";
-    String DEFAULT_TOMCAT_HTTP_PORT = "9001";
-    String DEFAULT_TOMCAT_SSL_PORT = "9002";
-    String DEFAULT_SOLR_TOMCAT_SSL_PORT = "8983";
-    String HTTP_PROTOCOL = "http://";
-    String HTTPS_PROTOCOL = "https://";
-    String URL_PORT_DELIMITER = ":";
-    String HAC_WEBROOT_KEY = "hac.webroot";
     String TOMCAT_JAVA_DEBUG_OPTIONS = "tomcat.debugjavaoptions";
     String X_RUNJDWP_TRANSPORT = "-Xrunjdwp:transport=";
     String ADDRESS = "address=";
@@ -206,7 +193,6 @@ public interface HybrisConstants {
     String ANT_BUILD_XML = "build.xml";
     int ANT_HEAP_SIZE_MB = 512;
     int ANT_STACK_SIZE_MB = 128;
-    String STATS_COLLECTOR_URL = "http://intellij.bcom.cz/hybrisintegration";
     String SEARCH_SCOPE_Y_PREFIX = "[y]";
     String SEARCH_SCOPE_GROUP_PREFIX = "group:";
     String HYBRIS_DATA_DIR_ENV = "HYBRIS_DATA_DIR";

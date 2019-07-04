@@ -44,15 +44,10 @@
         <internalFileTemplate name="FlexibleSearch File"/>
         <internalFileTemplate name="Impex File"/>
 
-        <projectService serviceImplementation="com.intellij.idea.plugin.hybris.tools.remote.console.view.HybrisConsolePanelView"/>
-
         <gotoClassContributor implementation="com.intellij.idea.plugin.hybris.gotoClass.CustomGotoClassContributor"/>
     </extensions>
 
     <project-components>
-        <component>
-            <implementation-class>com.intellij.idea.plugin.hybris.tools.remote.http.HybrisHacHttpClient</implementation-class>
-        </component>
     </project-components>
 
     <actions>
@@ -78,13 +73,10 @@
     </actions>
 
     <extensions defaultExtensionNs="com.intellij">
-        <toolWindow id="Hybris Console" icon="/icons/grayHybrisIcon.svg" anchor="bottom"
-                    factoryClass="com.intellij.idea.plugin.hybris.tools.remote.console.HybrisConsoleToolWindowFactory"/>
+
     </extensions>
 
     <extensionPoints>
-        <extensionPoint
-            qualifiedName="com.intellij.idea.plugin.hybris.consoleProvider"
-            interface="com.intellij.idea.plugin.hybris.tools.remote.console.HybrisConsoleProvider"/>
+
     </extensionPoints>
 </idea-plugin>

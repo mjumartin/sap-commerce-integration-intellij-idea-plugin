@@ -458,8 +458,6 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
         hybrisProjectSettings.setCompleteSetOfAvailableExtensionsInHybris(completeSetOfHybrisModules);
         hybrisProjectSettings.setExcludeTestSources(hybrisProjectDescriptor.isExcludeTestSources());
 
-        CommonIdeaService.getInstance().fixRemoteConnectionSettings(project);
-
         StartupManager.getInstance(project).runWhenProjectIsInitialized(() -> {
             final ToolWindowManager manager = ToolWindowManager.getInstance(project);
             final ToolWindow window = manager.getToolWindow("Hybris");

@@ -35,19 +35,13 @@ import com.intellij.notification.NotificationDisplayType;
 import com.intellij.notification.NotificationGroup;
 import com.intellij.notification.NotificationType;
 import com.intellij.openapi.Disposable;
-import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.extensions.PluginId;
-import com.intellij.openapi.progress.EmptyProgressIndicator;
 import com.intellij.openapi.project.DumbAwareRunnable;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManagerListener;
 import com.intellij.openapi.startup.StartupManager;
-import com.intellij.openapi.updateSettings.impl.PluginDownloader;
-import com.intellij.openapi.updateSettings.impl.UpdateChecker;
-import com.intellij.openapi.updateSettings.impl.UpdateInstaller;
-import com.intellij.openapi.updateSettings.impl.UpdateSettings;
 import com.intellij.spring.settings.SpringGeneralSettings;
 import com.intellij.util.text.DateFormatUtil;
 import org.apache.commons.io.IOUtils;
@@ -55,13 +49,11 @@ import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.event.HyperlinkEvent;
-import java.awt.*;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.Collection;
 
 import static com.intellij.idea.plugin.hybris.project.utils.PluginCommon.ANT_SUPPORT_PLUGIN_ID;
 import static com.intellij.idea.plugin.hybris.project.utils.PluginCommon.SPRING_PLUGIN_ID;
@@ -73,10 +65,9 @@ import static com.intellij.openapi.util.io.FileUtilRt.toSystemDependentName;
  */
 public class HybrisProjectManagerListener implements ProjectManagerListener, Disposable {
 
+    public static final int NOTIFICATION_TIMEOUT_MILLISECONDS = 3000;
     private static final Logger LOG = Logger.getInstance(HybrisProjectManagerListener.class);
     private static final String LAST_BUBBLE_INFO_TIME_PROPERTY = "LAST_BUBBLE_INFO_TIME";
-    public static final int NOTIFICATION_TIMEOUT_MILLISECONDS = 3000;
-
     private static final NotificationGroup Y_PROJECT_NOTIFICATION_GROUP = new NotificationGroup(
         "[y] project",
         NotificationDisplayType.BALLOON,
@@ -119,71 +110,6 @@ public class HybrisProjectManagerListener implements ProjectManagerListener, Dis
         });
     }
 
-    private void logVersion(final Project project) {
-        final HybrisProjectSettings settings = HybrisProjectSettingsComponent.getInstance(project).getState();
-        final String importedBy = settings.getImportedByVersion();
-        final String hybrisVersion = settings.getHybrisVersion();
-        final String pluginVersion = PluginManager.getPlugin(PluginId.getId(HybrisConstants.PLUGIN_ID)).getVersion();
-        LOG.info("Opening hybris version " + hybrisVersion + " which was imported by " + importedBy + ". Current plugin is " + pluginVersion);
-    }
-
-    private void continueOpening(final Project project) {
-        if (project.isDisposed()) {
-            return;
-        }
-        registerAntListener(project);
-        resetSpringGeneralSettings(project);
-        fixBackOfficeJRebelSupport(project);
-        CommonIdeaService.getInstance().fixRemoteConnectionSettings(project);
-        checkForUpdates();
-    }
-
-    private void checkForUpdates() {
-        UpdateSettings.getInstance().setCheckNeeded(true);
-        UpdateSettings.getInstance().forceCheckForUpdateAfterRestart();
-        ApplicationManager.getApplication().executeOnPooledThread(() -> {
-            Collection<PluginDownloader> availableUpdates = UpdateChecker.getPluginUpdates();
-            if (availableUpdates == null) {
-                LOG.info("Some plugin updates found");
-                return;
-            }
-            PluginDownloader pluginDownloader =
-                availableUpdates.stream()
-                                .filter(downloader -> HybrisConstants.PLUGIN_ID.equals(downloader.getPluginId()))
-                                .findAny().orElse(null);
-            if (pluginDownloader == null) {
-                LOG.info("Hybris integration plugin update not found");
-                return;
-            }
-            LOG.info("Hybris integration plugin update available");
-            if (UpdateInstaller.installPluginUpdates(availableUpdates, new EmptyProgressIndicator())) {
-                LOG.info("Hybris integration plugin update succeeded");
-            } else {
-                LOG.info("Hybris integration plugin update failed");
-            }
-        });
-    }
-
-    private void resetSpringGeneralSettings(final Project project) {
-        final CommonIdeaService commonIdeaService = ServiceManager.getService(CommonIdeaService.class);
-        if (commonIdeaService.isHybrisProject(project)) {
-            if (isPluginActive(SPRING_PLUGIN_ID)) {
-                SpringGeneralSettings springGeneralSettings = SpringGeneralSettings.getInstance(project);
-                springGeneralSettings.setShowMultipleContextsPanel(false);
-                springGeneralSettings.setShowProfilesPanel(false);
-            }
-        }
-    }
-
-    private void registerAntListener(final Project project) {
-        final CommonIdeaService commonIdeaService = ServiceManager.getService(CommonIdeaService.class);
-        if (commonIdeaService.isHybrisProject(project)) {
-            if (isPluginActive(ANT_SUPPORT_PLUGIN_ID)) {
-                HybrisAntBuildListener.registerAntListener(project);
-            }
-        }
-    }
-
     private boolean isOldHybrisProject(final Project project) {
         final CommonIdeaService commonIdeaService = ServiceManager.getService(CommonIdeaService.class);
 
@@ -214,10 +140,21 @@ public class HybrisProjectManagerListener implements ProjectManagerListener, Dis
         }
     }
 
-    private void persistCurrentTimeForNotificationShowTime() {
-        PropertiesComponent.getInstance().setValue(
-            LAST_BUBBLE_INFO_TIME_PROPERTY, String.valueOf(System.currentTimeMillis())
-        );
+    private void logVersion(final Project project) {
+        final HybrisProjectSettings settings = HybrisProjectSettingsComponent.getInstance(project).getState();
+        final String importedBy = settings.getImportedByVersion();
+        final String hybrisVersion = settings.getHybrisVersion();
+        final String pluginVersion = PluginManager.getPlugin(PluginId.getId(HybrisConstants.PLUGIN_ID)).getVersion();
+        LOG.info("Opening hybris version " + hybrisVersion + " which was imported by " + importedBy + ". Current plugin is " + pluginVersion);
+    }
+
+    private void continueOpening(final Project project) {
+        if (project.isDisposed()) {
+            return;
+        }
+        registerAntListener(project);
+        resetSpringGeneralSettings(project);
+        fixBackOfficeJRebelSupport(project);
     }
 
     private boolean notificationWasNotAlreadyShownThisMonth() {
@@ -228,8 +165,34 @@ public class HybrisProjectManagerListener implements ProjectManagerListener, Dis
         return currentTime - lastNotificationTime >= DateFormatUtil.MONTH;
     }
 
+    private void persistCurrentTimeForNotificationShowTime() {
+        PropertiesComponent.getInstance().setValue(
+            LAST_BUBBLE_INFO_TIME_PROPERTY, String.valueOf(System.currentTimeMillis())
+        );
+    }
+
     private void goToDiscountOffer(final HyperlinkEvent myHyperlinkEvent) {
         BrowserUtil.browse(myHyperlinkEvent.getDescription());
+    }
+
+    private void registerAntListener(final Project project) {
+        final CommonIdeaService commonIdeaService = ServiceManager.getService(CommonIdeaService.class);
+        if (commonIdeaService.isHybrisProject(project)) {
+            if (isPluginActive(ANT_SUPPORT_PLUGIN_ID)) {
+                HybrisAntBuildListener.registerAntListener(project);
+            }
+        }
+    }
+
+    private void resetSpringGeneralSettings(final Project project) {
+        final CommonIdeaService commonIdeaService = ServiceManager.getService(CommonIdeaService.class);
+        if (commonIdeaService.isHybrisProject(project)) {
+            if (isPluginActive(SPRING_PLUGIN_ID)) {
+                SpringGeneralSettings springGeneralSettings = SpringGeneralSettings.getInstance(project);
+                springGeneralSettings.setShowMultipleContextsPanel(false);
+                springGeneralSettings.setShowProfilesPanel(false);
+            }
+        }
     }
 
     private void fixBackOfficeJRebelSupport(final Project project) {

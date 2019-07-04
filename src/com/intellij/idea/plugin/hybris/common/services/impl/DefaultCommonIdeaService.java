@@ -169,99 +169,6 @@ public class DefaultCommonIdeaService implements CommonIdeaService {
             .orElse(null);
     }
 
-    @Override
-    public String getHostHacUrl(@NotNull final Project project) {
-        return getHostHacUrl(project, null);
-    }
-
-    @Override
-    public String getHostHacUrl(@NotNull final Project project, @Nullable HybrisRemoteConnectionSettings settings) {
-        final StringBuilder sb = new StringBuilder();
-
-        // First try to get the HAC webroot from the project settings, fallback to local props if not set in settings;
-        // For a remote server configured with hac on the root context, use / in the tool settings
-        if (settings == null) {
-            settings = HybrisDeveloperSpecificProjectSettingsComponent.getInstance(project).getActiveHybrisRemoteConnectionSettings(project);
-        }
-        sb.append(getHostUrl(project, settings));
-        String hac = settings.getHacWebroot();
-        if (StringUtils.isEmpty(hac)) {
-            final Properties localProperties = getLocalProperties(project);
-            if (localProperties != null) {
-                hac = localProperties.getProperty(HybrisConstants.HAC_WEBROOT_KEY);
-            }
-        }
-
-        if (hac != null) {
-            sb.append('/');
-            sb.append(StringUtils.strip(hac, " /"));
-        }
-
-        final String result = sb.toString();
-
-        LOG.debug("Calculated hostHacURL=" + result);
-
-        return result;
-    }
-
-    @Override
-    public String getHostSolrUrl(final Project project, @Nullable HybrisRemoteConnectionSettings settings) {
-        final StringBuilder sb = new StringBuilder();
-
-        if (settings == null) {
-            settings = HybrisDeveloperSpecificProjectSettingsComponent.getInstance(project).getActiveSolrConnectionSettings(project);
-        }
-        if (!settings.getHostIP().startsWith("http")) {
-            sb.append("https://");
-        }
-        sb.append(settings.getHostIP());
-        sb.append(":");
-        sb.append(settings.getPort());
-        sb.append("/");
-        sb.append(settings.getSolrWebroot());
-        final String result = sb.toString();
-
-        LOG.debug("Calculated host SOLR URL=" + result);
-
-        return result;
-    }
-
-    @Override
-    public String getHostUrl(@NotNull final Project project) {
-        return getHostUrl(project, null);
-    }
-
-    @Override
-    public String getHostUrl(@NotNull final Project project, @Nullable HybrisRemoteConnectionSettings settings) {
-        if (settings == null) {
-            settings = HybrisDeveloperSpecificProjectSettingsComponent.getInstance(project).getActiveHybrisRemoteConnectionSettings(project);
-        }
-        final String ip = settings.getHostIP();
-        StringBuilder sb = new StringBuilder();
-        final Properties localProperties = getLocalProperties(project);
-        String sslPort = HybrisConstants.DEFAULT_TOMCAT_SSL_PORT;
-        String httpPort =  HybrisConstants.DEFAULT_TOMCAT_HTTP_PORT;
-        if (localProperties != null) {
-            sslPort = localProperties.getProperty(HybrisConstants.TOMCAT_SSL_PORT_KEY, HybrisConstants.DEFAULT_TOMCAT_SSL_PORT);
-            httpPort = localProperties.getProperty(HybrisConstants.TOMCAT_HTTP_PORT_KEY, HybrisConstants.DEFAULT_TOMCAT_HTTP_PORT);
-        }
-        String port = settings.getPort();
-        if (port == null || port.isEmpty()) {
-            port = sslPort;
-        }
-        if (port.equals(httpPort) || port.equals(String.valueOf(ProtocolDefaultPorts.HTTP))) {
-            sb.append(HybrisConstants.HTTP_PROTOCOL);
-        } else {
-            sb.append(HybrisConstants.HTTPS_PROTOCOL);
-        }
-        sb.append(ip);
-        sb.append(HybrisConstants.URL_PORT_DELIMITER);
-        sb.append(port);
-
-        return sb.toString();
-    }
-
-
     private boolean is2019plus(final Project project) {
         final String hybrisVersion = HybrisProjectSettingsComponent.getInstance(project).getState().getHybrisVersion();
 
@@ -280,34 +187,6 @@ public class DefaultCommonIdeaService implements CommonIdeaService {
     @Override
     public String getBackofficeWebInfClasses(final Project project) {
         return is2019plus(project) ? HybrisConstants.BACKOFFICE_WEB_INF_CLASSES_2019 : HybrisConstants.BACKOFFICE_WEB_INF_CLASSES;
-    }
-
-    @Override
-    public void fixRemoteConnectionSettings(final Project project) {
-        HybrisDeveloperSpecificProjectSettingsComponent developerSpecificSettings = HybrisDeveloperSpecificProjectSettingsComponent.getInstance(project);
-        HybrisDeveloperSpecificProjectSettings state = developerSpecificSettings.getState();
-        if (state != null) {
-            List<HybrisRemoteConnectionSettings> connectionList = state.getRemoteConnectionSettingsList();
-            connectionList.stream().forEach(it->{
-                if (it.getType() == null) {
-                    it.setType(Hybris);
-                }
-            });
-            final List<HybrisRemoteConnectionSettings> remoteList = connectionList
-                .stream().filter(it -> it.getType() == Hybris).collect(Collectors.toList());
-            if (remoteList.isEmpty()) {
-                HybrisRemoteConnectionSettings newSettings = developerSpecificSettings.getDefaultHybrisRemoteConnectionSettings(project);
-                connectionList.add(newSettings);
-                state.setActiveRemoteConnectionID(newSettings.getUuid());
-            }
-            final List<HybrisRemoteConnectionSettings> solrList = connectionList
-                .stream().filter(it -> it.getType() == SOLR).collect(Collectors.toList());
-            if (solrList.isEmpty()) {
-                HybrisRemoteConnectionSettings newSettings = developerSpecificSettings.getDefaultSolrRemoteConnectionSettings(project);
-                connectionList.add(newSettings);
-                state.setActiveSolrConnectionID(newSettings.getUuid());
-            }
-        }
     }
 
     private Properties getLocalProperties(final Project project) {
