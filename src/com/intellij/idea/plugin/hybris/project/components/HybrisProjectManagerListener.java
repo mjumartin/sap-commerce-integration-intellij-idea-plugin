@@ -22,7 +22,6 @@ import com.intellij.ide.BrowserUtil;
 import com.intellij.ide.plugins.IdeaPluginDescriptor;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.util.PropertiesComponent;
-import com.intellij.idea.plugin.hybris.ant.HybrisAntBuildListener;
 import com.intellij.idea.plugin.hybris.common.HybrisConstants;
 import com.intellij.idea.plugin.hybris.common.services.CommonIdeaService;
 import com.intellij.idea.plugin.hybris.common.services.NotificationService;
@@ -152,7 +151,6 @@ public class HybrisProjectManagerListener implements ProjectManagerListener, Dis
         if (project.isDisposed()) {
             return;
         }
-        registerAntListener(project);
         resetSpringGeneralSettings(project);
         fixBackOfficeJRebelSupport(project);
     }
@@ -173,15 +171,6 @@ public class HybrisProjectManagerListener implements ProjectManagerListener, Dis
 
     private void goToDiscountOffer(final HyperlinkEvent myHyperlinkEvent) {
         BrowserUtil.browse(myHyperlinkEvent.getDescription());
-    }
-
-    private void registerAntListener(final Project project) {
-        final CommonIdeaService commonIdeaService = ServiceManager.getService(CommonIdeaService.class);
-        if (commonIdeaService.isHybrisProject(project)) {
-            if (isPluginActive(ANT_SUPPORT_PLUGIN_ID)) {
-                HybrisAntBuildListener.registerAntListener(project);
-            }
-        }
     }
 
     private void resetSpringGeneralSettings(final Project project) {

@@ -160,7 +160,7 @@ public interface HybrisConstants {
     String HYBRIS_DEVELOPER_SPECIFIC_PROJECT_SETTINGS_COMPONENT_NAME = "HybrisDeveloperSpecificProjectSettings";
 
     String DEFAULT_DIRECTORY_NAME_FOR_IDEA_MODULE_FILES = "idea-module-files";
-    String PLUGIN_ID = "ccom.intellij.idea.plugin.commerce.integration";
+    String PLUGIN_ID = "com.intellij.idea.plugin.commerce.integration.lessbloat";
     String JREBEL_PLUGIN_ID = "JRebelPlugin";
     String CONFIGURATOR_FACTORY_ID = PLUGIN_ID + ".hybrisConfiguratorFactory";
 

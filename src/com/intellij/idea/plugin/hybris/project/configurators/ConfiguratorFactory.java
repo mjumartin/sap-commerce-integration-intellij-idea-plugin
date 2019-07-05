@@ -68,9 +68,6 @@ public interface ConfiguratorFactory {
     RunConfigurationConfigurator getTestRunConfigurationConfigurator();
 
     @Nullable
-    AntConfigurator getAntConfigurator();
-
-    @Nullable
     MavenConfigurator getMavenConfigurator();
 
     @Nullable

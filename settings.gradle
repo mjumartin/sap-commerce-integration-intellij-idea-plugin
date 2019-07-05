@@ -19,4 +19,4 @@
 rootProject.name = "Integration-SAP-Commerce"
 
 include ":common"
-include ":rt-ant"
+//include ":rt-ant"

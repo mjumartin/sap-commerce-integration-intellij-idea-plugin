@@ -18,7 +18,6 @@
 
 package com.intellij.idea.plugin.hybris.project.configurators.impl;
 
-import com.intellij.idea.plugin.hybris.project.configurators.AntConfigurator;
 import com.intellij.idea.plugin.hybris.project.configurators.JavaCompilerConfigurator;
 import com.intellij.idea.plugin.hybris.project.configurators.CompilerOutputPathsConfigurator;
 import com.intellij.idea.plugin.hybris.project.configurators.ConfiguratorFactory;
@@ -147,12 +146,6 @@ public class DefaultConfiguratorFactory implements ConfiguratorFactory {
     @Override
     public RunConfigurationConfigurator getTestRunConfigurationConfigurator() {
         return ServiceManager.getService(TestRunConfigurationConfigurator.class);
-    }
-
-    @Nullable
-    @Override
-    public AntConfigurator getAntConfigurator() {
-        return ServiceManager.getService(AntConfigurator.class);
     }
 
     @Nullable

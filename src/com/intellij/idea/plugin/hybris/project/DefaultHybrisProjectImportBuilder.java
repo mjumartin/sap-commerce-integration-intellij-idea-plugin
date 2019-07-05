@@ -224,15 +224,6 @@ public class DefaultHybrisProjectImportBuilder extends AbstractHybrisProjectImpo
         @NotNull final ConfiguratorFactory configuratorFactory,
         @NotNull final Runnable callback
     ) {
-        try {
-            final AntConfigurator antConfigurator = configuratorFactory.getAntConfigurator();
-
-            if (antConfigurator != null) {
-                antConfigurator.configure(hybrisProjectDescriptor, allHybrisModules, project);
-            }
-        } catch (Exception e) {
-            LOG.error("Can not configure Ant due to an error.", e);
-        }
         final DataSourcesConfigurator dataSourcesConfigurator = configuratorFactory.getDataSourcesConfigurator();
 
         if (dataSourcesConfigurator != null) {

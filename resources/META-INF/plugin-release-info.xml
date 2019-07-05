@@ -1,50 +1,25 @@
 <idea-plugin>
-
-    <id>ccom.intellij.idea.plugin.commerce.integration</id>
+    <id>com.intellij.idea.plugin.commerce.integration.lessbloat</id>
     <name>Integration for SAP Commerce</name>
-    <version>2019.1</version>
+    <version>2019.100</version>
 
     <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
     <idea-version since-build="191"/>
 
-    <vendor email="commerceplugin@janhouse.lv"
-            url="https://github.com/Janhouse/sap-commerce-integration-intellij-idea-plugin">
-        Janis Jansons
-    </vendor>
+    <vendor>Martin</vendor>
 
     <description>
         <![CDATA[
-          <p>This is an unofficial community maintained plugin for SAP Commerce (previously Hybris) integration within IntelliJ IDEA.</p>
-
-          <b>Features:</b>
-          <ul>
-              <li>Import of SAP Commerce extensions to Intellij IDEA with automatic dependency resolution and classpath configuration optimized for fast compilation and correct unit and integration tests execution.</li>
-              <li>Automatic configuration of Spring, Web, Ant, Database Connector Intellij IDEA plugins.</li>
-              <li>Import your custom Eclise, Maven and Gradle extensions together with SAP Commerce platform.</li>
-              <li>Custom editor for flexible Search queries with an ability to execute them on a remote SAP Commerce instance right from your IDE by single click of a button.</li>
-              <li>Custom editor for impex files with automatic formatting, find usages and go to declaration actions, validation and import of impexes into a remote SAP Commerce instance right from your IDE by single click of a button.</li>
-              <li>Custom editor for items.xml with validation, best-practices analyses, quick-fix autosuggestion and easy navigation.</li>
-              <li>Custom editor for beans.xml with custom automated Intellij refactorings actions.</li>
-              <li>Visualization of business process graph (use context menu of the file "Diagrams/Show Diagram", only Ultimate IDEA).</li>
-              <li>Enhanced project view tree.</li>
-              <li>JRebel and DCEVM support.</li>
-              <li>Execution of Flexible Search queries, Groovy scripts, Impexes though IDE using HAC Integration tool.</li>
-              <li>Execution of queries on remote Solr instances.</li>
-              <li>And much more</li>
-          </ul>
-
           <p>This plugin is a derivative from plugin originally started by Alexander Bartash and released under GPL 3.0 license.</p>
           <p>If you prefer using the now closed source premium featured version of the plugin, visit https://plugins.jetbrains.com/plugin/7525-hybris-integration</p>
-
       ]]>
     </description>
 
     <change-notes>
         <![CDATA[
-            <h2>Changes in 2019.1</h2>
+            <h2>Changes in 2019.100</h2>
             <ul>
-                <li>Removed tracking</li>
-                <li>Updated product name in description</li>
+                <li>Removed all the cruft and bloat</li>
             </ul>
         ]]>
     </change-notes>

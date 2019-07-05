@@ -28,7 +28,6 @@ import com.intellij.framework.detection.impl.FrameworkDetectionUtil;
 import com.intellij.ide.plugins.PluginManager;
 import com.intellij.ide.util.PropertiesComponent;
 import com.intellij.idea.plugin.hybris.common.HybrisConstants;
-import com.intellij.idea.plugin.hybris.common.services.CommonIdeaService;
 import com.intellij.idea.plugin.hybris.common.utils.HybrisI18NBundleUtils;
 import com.intellij.idea.plugin.hybris.impex.ImpexLanguage;
 import com.intellij.idea.plugin.hybris.project.configurators.CompilerOutputPathsConfigurator;
@@ -58,7 +57,6 @@ import com.intellij.idea.plugin.hybris.project.descriptors.MavenModuleDescriptor
 import com.intellij.idea.plugin.hybris.project.descriptors.OotbHybrisModuleDescriptor;
 import com.intellij.idea.plugin.hybris.settings.HybrisApplicationSettings;
 import com.intellij.idea.plugin.hybris.settings.HybrisApplicationSettingsComponent;
-import com.intellij.idea.plugin.hybris.settings.HybrisDeveloperSpecificProjectSettingsListener;
 import com.intellij.idea.plugin.hybris.settings.HybrisProjectSettings;
 import com.intellij.idea.plugin.hybris.settings.HybrisProjectSettingsComponent;
 import com.intellij.javaee.application.facet.JavaeeApplicationFacet;
@@ -84,11 +82,8 @@ import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.roots.ProjectRootManager;
 import com.intellij.openapi.roots.impl.storage.ClassPathStorageUtil;
 import com.intellij.openapi.roots.impl.storage.ClasspathStorage;
-import com.intellij.openapi.startup.StartupManager;
 import com.intellij.openapi.util.io.FileUtil;
 import com.intellij.openapi.vfs.VfsUtilCore;
-import com.intellij.openapi.wm.ToolWindow;
-import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.psi.codeStyle.CodeStyleScheme;
 import com.intellij.psi.codeStyle.CodeStyleSchemes;
 import com.intellij.psi.codeStyle.CodeStyleSettings;
@@ -125,6 +120,7 @@ import static com.intellij.idea.plugin.hybris.project.utils.PluginCommon.isPlugi
  * Created by Martin Zdarsky-Jones on 2/11/16.
  */
 public class ImportProjectProgressModalWindow extends Task.Modal {
+
     private static final Logger LOG = Logger.getInstance(ImportProjectProgressModalWindow.class);
     private static final int COMMITTED_CHUNK_SIZE = 20;
 
@@ -133,7 +129,8 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
     private final ConfiguratorFactory configuratorFactory;
     private final HybrisProjectDescriptor hybrisProjectDescriptor;
     private final List<Module> modules;
-    @NotNull private IdeModifiableModelsProvider modifiableModelsProvider;
+    @NotNull
+    private IdeModifiableModelsProvider modifiableModelsProvider;
 
     public ImportProjectProgressModalWindow(
         final Project project,
@@ -219,7 +216,8 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
             moduleSettingsConfigurator.configure(moduleDescriptor, javaModule);
 
             final ModifiableRootModel modifiableRootModel = modifiableModelsProvider.getModifiableRootModel(javaModule);
-            final ModifiableFacetModel modifiableFacetModel = modifiableModelsProvider.getModifiableFacetModel(javaModule);
+            final ModifiableFacetModel modifiableFacetModel = modifiableModelsProvider.getModifiableFacetModel(
+                javaModule);
 
             indicator.setText2(HybrisI18NBundleUtils.message("hybris.project.import.module.sdk"));
             ClasspathStorage.setStorageType(modifiableRootModel, ClassPathStorageUtil.DEFAULT_STORAGE);
@@ -305,8 +303,16 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
                     .map(e -> (EclipseModuleDescriptor) e)
                     .collect(Collectors.toList());
                 if (!eclipseModules.isEmpty()) {
-                    Map<String, String[]> eclipseGroupMapping = fetchGroupMapping(groupModuleConfigurator, eclipseModules);
-                    eclipseConfigurator.configure(hybrisProjectDescriptor, project, eclipseModules, eclipseGroupMapping);
+                    Map<String, String[]> eclipseGroupMapping = fetchGroupMapping(
+                        groupModuleConfigurator,
+                        eclipseModules
+                    );
+                    eclipseConfigurator.configure(
+                        hybrisProjectDescriptor,
+                        project,
+                        eclipseModules,
+                        eclipseGroupMapping
+                    );
                 }
             } catch (Exception e) {
                 LOG.error("Can not import Eclipse modules due to an error.", e);
@@ -325,13 +331,31 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
                     .map(e -> (GradleModuleDescriptor) e)
                     .collect(Collectors.toList());
                 if (!gradleModules.isEmpty()) {
-                    Map<String, String[]> gradleRootGroupMapping = fetchGroupMapping(groupModuleConfigurator, gradleModules);
-                    gradleConfigurator.configure(hybrisProjectDescriptor, project, gradleModules, gradleRootGroupMapping);
+                    Map<String, String[]> gradleRootGroupMapping = fetchGroupMapping(
+                        groupModuleConfigurator,
+                        gradleModules
+                    );
+                    gradleConfigurator.configure(
+                        hybrisProjectDescriptor,
+                        project,
+                        gradleModules,
+                        gradleRootGroupMapping
+                    );
                 }
             } catch (Exception e) {
                 LOG.error("Can not import Gradle modules due to an error.", e);
             }
         }
+    }
+
+    private void initializeHybrisProjectSettings(@NotNull final Project project) {
+        Validate.notNull(project);
+
+        final @NotNull HybrisProjectSettings hybrisProjectSettings = HybrisProjectSettingsComponent.getInstance(project)
+                                                                                                   .getState();
+        hybrisProjectSettings.setHybrisProject(true);
+        final String version = PluginManager.getPlugin(PluginId.getId(HybrisConstants.PLUGIN_ID)).getVersion();
+        hybrisProjectSettings.setImportedByVersion(version);
     }
 
     private void updateProjectDictionary(
@@ -341,8 +365,11 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
         final ProjectDictionaryState dictionaryState = ServiceManager.getService(project, ProjectDictionaryState.class);
         final ProjectDictionary projectDictionary = dictionaryState.getProjectDictionary();
         projectDictionary.getEditableWords();//ensure dictionaries exist
-        EditableDictionary hybrisDictionary = projectDictionary.getDictionaries().stream()
-                    .filter(e -> DICTIONARY_NAME.equals(e.getName())).findFirst().orElse(null);
+        EditableDictionary hybrisDictionary = projectDictionary.getDictionaries()
+                                                               .stream()
+                                                               .filter(e -> DICTIONARY_NAME.equals(e.getName()))
+                                                               .findFirst()
+                                                               .orElse(null);
         if (hybrisDictionary == null) {
             hybrisDictionary = new UserDictionary(DICTIONARY_NAME);
             projectDictionary.getDictionaries().add(hybrisDictionary);
@@ -354,16 +381,6 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
                                          .map(String::toLowerCase)
                                          .collect(Collectors.toSet());
         hybrisDictionary.addToDictionary(moduleNames);
-    }
-
-    private void initializeHybrisProjectSettings(@NotNull final Project project) {
-        Validate.notNull(project);
-
-        final @NotNull HybrisProjectSettings hybrisProjectSettings = HybrisProjectSettingsComponent.getInstance(project)
-                                                                                                   .getState();
-        hybrisProjectSettings.setHybrisProject(true);
-        final String version = PluginManager.getPlugin(PluginId.getId(HybrisConstants.PLUGIN_ID)).getVersion();
-        hybrisProjectSettings.setImportedByVersion(version);
     }
 
     private void selectSdk(@NotNull final Project project) {
@@ -457,27 +474,6 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
                                .forEach(e -> completeSetOfHybrisModules.add(e.getName()));
         hybrisProjectSettings.setCompleteSetOfAvailableExtensionsInHybris(completeSetOfHybrisModules);
         hybrisProjectSettings.setExcludeTestSources(hybrisProjectDescriptor.isExcludeTestSources());
-
-        StartupManager.getInstance(project).runWhenProjectIsInitialized(() -> {
-            final ToolWindowManager manager = ToolWindowManager.getInstance(project);
-            final ToolWindow window = manager.getToolWindow("Hybris");
-            project.getMessageBus().syncPublisher(HybrisDeveloperSpecificProjectSettingsListener.TOPIC).hacConnectionSettingsChanged();
-            project.getMessageBus().syncPublisher(HybrisDeveloperSpecificProjectSettingsListener.TOPIC).solrConnectionSettingsChanged();
-            window.show(null);
-        });
-    }
-
-    private Set<String> createModulesOnBlackList() {
-        final List<String> toBeImportedNames = hybrisProjectDescriptor
-            .getModulesChosenForImport().stream()
-            .map(HybrisModuleDescriptor::getName)
-            .collect(Collectors.toList());
-        return hybrisProjectDescriptor
-            .getFoundModules().stream()
-            .filter(e -> !hybrisProjectDescriptor.getModulesChosenForImport().contains(e))
-            .filter(e -> toBeImportedNames.contains(e.getName()))
-            .map(HybrisModuleDescriptor::getRelativePath)
-            .collect(Collectors.toSet());
     }
 
     private void disableWrapOnType(final Language impexLanguage) {
@@ -504,5 +500,18 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
             return false;
         }
         return moduleDescriptor.getRootProjectDescriptor().isImportOotbModulesInReadOnlyMode();
+    }
+
+    private Set<String> createModulesOnBlackList() {
+        final List<String> toBeImportedNames = hybrisProjectDescriptor
+            .getModulesChosenForImport().stream()
+            .map(HybrisModuleDescriptor::getName)
+            .collect(Collectors.toList());
+        return hybrisProjectDescriptor
+            .getFoundModules().stream()
+            .filter(e -> !hybrisProjectDescriptor.getModulesChosenForImport().contains(e))
+            .filter(e -> toBeImportedNames.contains(e.getName()))
+            .map(HybrisModuleDescriptor::getRelativePath)
+            .collect(Collectors.toSet());
     }
 }
