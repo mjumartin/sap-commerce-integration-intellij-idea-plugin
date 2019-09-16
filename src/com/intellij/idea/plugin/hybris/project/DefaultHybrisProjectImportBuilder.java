@@ -224,15 +224,6 @@ public class DefaultHybrisProjectImportBuilder extends AbstractHybrisProjectImpo
         @NotNull final ConfiguratorFactory configuratorFactory,
         @NotNull final Runnable callback
     ) {
-        final DataSourcesConfigurator dataSourcesConfigurator = configuratorFactory.getDataSourcesConfigurator();
-
-        if (dataSourcesConfigurator != null) {
-            try {
-                dataSourcesConfigurator.configure(project);
-            } catch (Exception e) {
-                LOG.error("Can not import data sources due to an error.", e);
-            }
-        }
         // invokeLater is needed to avoid a problem with transaction validation:
         // "Write-unsafe context!...", "Do not use API that changes roots from roots events..."
         ApplicationManager.getApplication().invokeLater(() -> {
