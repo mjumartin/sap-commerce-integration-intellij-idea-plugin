@@ -95,10 +95,6 @@ public class HybrisProjectManagerListener implements ProjectManagerListener, Dis
                 );
             }
 
-            this.showImportantInfoNotificationWithCloseTimeoutIfItWasNotShownThisMonth(
-                project, "support.us.step.title", "support.us.step.text"
-            );
-
             final CommonIdeaService commonIdeaService = ServiceManager.getService(CommonIdeaService.class);
             if (!commonIdeaService.isHybrisProject(project)) {
                 return;
@@ -119,26 +115,6 @@ public class HybrisProjectManagerListener implements ProjectManagerListener, Dis
         }
     }
 
-    private void showImportantInfoNotificationWithCloseTimeoutIfItWasNotShownThisMonth(
-        final Project project, String titleKey, String textKey
-    ) {
-        if (this.notificationWasNotAlreadyShownThisMonth()) {
-            this.persistCurrentTimeForNotificationShowTime();
-
-            final NotificationService notificationService = new DefaultNotificationService(
-                Y_PROJECT_NOTIFICATION_GROUP, project
-            );
-
-            notificationService.showImportantNotificationWithCloseTimeout(
-                titleKey,
-                textKey,
-                NotificationType.INFORMATION,
-                NOTIFICATION_TIMEOUT_MILLISECONDS,
-                (myNotification, myHyperlinkEvent) -> goToDiscountOffer(myHyperlinkEvent)
-            );
-        }
-    }
-
     private void logVersion(final Project project) {
         final HybrisProjectSettings settings = HybrisProjectSettingsComponent.getInstance(project).getState();
         final String importedBy = settings.getImportedByVersion();
@@ -153,24 +129,6 @@ public class HybrisProjectManagerListener implements ProjectManagerListener, Dis
         }
         resetSpringGeneralSettings(project);
         fixBackOfficeJRebelSupport(project);
-    }
-
-    private boolean notificationWasNotAlreadyShownThisMonth() {
-        final PropertiesComponent properties = PropertiesComponent.getInstance();
-        final long lastNotificationTime = properties.getOrInitLong(LAST_BUBBLE_INFO_TIME_PROPERTY, 0);
-        final long currentTime = System.currentTimeMillis();
-
-        return currentTime - lastNotificationTime >= DateFormatUtil.MONTH;
-    }
-
-    private void persistCurrentTimeForNotificationShowTime() {
-        PropertiesComponent.getInstance().setValue(
-            LAST_BUBBLE_INFO_TIME_PROPERTY, String.valueOf(System.currentTimeMillis())
-        );
-    }
-
-    private void goToDiscountOffer(final HyperlinkEvent myHyperlinkEvent) {
-        BrowserUtil.browse(myHyperlinkEvent.getDescription());
     }
 
     private void resetSpringGeneralSettings(final Project project) {
