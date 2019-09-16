@@ -53,6 +53,7 @@ public class DefaultVersionControlSystemConfigurator implements VersionControlSy
         }
         final ArrayList<VcsDirectoryMapping> directoryMappings = detectedRoots
             .stream()
+            .filter(detectedRoot -> !"bin".equals(detectedRoot.getPath().getName()) && !"config".equals(detectedRoot.getPath().getName()))
             .map(root -> new VcsDirectoryMapping(root.getPath().getPath(), root.getVcs().getName()))
             .collect(Collectors.toCollection(ArrayList::new));
         vcsManager.setDirectoryMappings(directoryMappings);
