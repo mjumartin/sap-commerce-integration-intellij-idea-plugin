@@ -18,12 +18,12 @@
 
 package com.intellij.idea.plugin.hybris.project.configurators.impl;
 
-import com.intellij.idea.plugin.hybris.common.HybrisConstants;
 import com.intellij.idea.plugin.hybris.project.configurators.CompilerOutputPathsConfigurator;
 import com.intellij.idea.plugin.hybris.project.descriptors.HybrisModuleDescriptor;
 import com.intellij.openapi.roots.CompilerModuleExtension;
 import com.intellij.openapi.roots.ModifiableRootModel;
 import com.intellij.openapi.vfs.VfsUtilCore;
+import com.intellij.util.PathUtil;
 import org.apache.commons.lang3.Validate;
 import org.jetbrains.annotations.NotNull;
 
@@ -48,10 +48,23 @@ public class DefaultCompilerOutputPathsConfigurator implements CompilerOutputPat
             CompilerModuleExtension.class
         );
 
-        final File outputDirectory = new File(
-            moduleDescriptor.getRootDirectory(),
-            HybrisConstants.JAVA_COMPILER_FAKE_OUTPUT_PATH
-        );
+        final boolean isWebModule = moduleDescriptor.getWebRoot() != null;
+        final boolean isBackofficeModule = new File(moduleDescriptor.getRootDirectory(), "backoffice").exists();
+
+        final File outputDirectory;
+        if (isWebModule) {
+            outputDirectory = new File(
+                moduleDescriptor.getWebRoot(),
+                PathUtil.toSystemDependentName("WEB-INF/classes")
+            );
+        } else if (isBackofficeModule) {
+            outputDirectory = new File(
+                moduleDescriptor.getRootDirectory(),
+                PathUtil.toSystemDependentName("backoffice/classes")
+            );
+        } else {
+            outputDirectory = new File(moduleDescriptor.getRootDirectory(), "classes");
+        }
 
         compilerModuleExtension.setCompilerOutputPath(VfsUtilCore.pathToUrl(outputDirectory.getAbsolutePath()));
         compilerModuleExtension.setCompilerOutputPathForTests(VfsUtilCore.pathToUrl(outputDirectory.getAbsolutePath()));
@@ -59,5 +72,4 @@ public class DefaultCompilerOutputPathsConfigurator implements CompilerOutputPat
         compilerModuleExtension.setExcludeOutput(true);
         compilerModuleExtension.inheritCompilerOutputPath(false);
     }
-
 }
