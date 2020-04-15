@@ -16,7 +16,4 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-rootProject.name = "Integration-SAP-Commerce"
-
-include ":common"
-//include ":rt-ant"
+rootProject.name = "SAP CX Light"

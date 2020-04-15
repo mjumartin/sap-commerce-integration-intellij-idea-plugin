@@ -1,0 +1,30 @@
+<idea-plugin>
+    <id>com.intellij.idea.plugin.commerce.integration.lessbloat</id>
+    <name>SAP Hybris Light</name>
+    <version>2020.101</version>
+
+    <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
+    <idea-version since-build="201.6668"/>
+
+    <vendor>Martin</vendor>
+
+    <description>
+        <![CDATA[
+          <p>This plugin is a derivative from plugin originally started by Alexander Bartash and released under GPL 3.0 license.</p>
+          <p>If you prefer using the now closed source premium featured version of the plugin, visit https://plugins.jetbrains.com/plugin/7525-hybris-integration</p>
+      ]]>
+    </description>
+
+    <change-notes>
+        <![CDATA[
+            <h2>Changes in 2020.100</h2>
+            <ul>
+                <li>Updated to 2020 and removed some dependencies</li>
+            </ul>
+            <h2>Changes in 2019.100</h2>
+            <ul>
+                <li>Removed all the cruft and bloat</li>
+            </ul>
+        ]]>
+    </change-notes>
+</idea-plugin>
