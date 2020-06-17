@@ -48,16 +48,29 @@ public class DefaultCompilerOutputPathsConfigurator implements CompilerOutputPat
             CompilerModuleExtension.class
         );
 
-        final boolean isWebModule = moduleDescriptor.getWebRoot() != null;
-        final boolean isBackofficeModule = new File(moduleDescriptor.getRootDirectory(), "backoffice").exists();
+        final File outputDirectory = getOutputDirectory(moduleDescriptor);
+        compilerModuleExtension.setCompilerOutputPath(VfsUtilCore.pathToUrl(outputDirectory.getAbsolutePath()));
+        compilerModuleExtension.setCompilerOutputPathForTests(VfsUtilCore.pathToUrl(outputDirectory.getAbsolutePath()));
 
+        compilerModuleExtension.setExcludeOutput(true);
+        compilerModuleExtension.inheritCompilerOutputPath(false);
+    }
+
+    // TODO: There is a problem here. For web modules, ant compiles their non-web src folder
+    //   into /classes and the web/src into WEB-INF/classes. IntelliJ will put all of in into
+    //   WEB-INF/classes which will cause the ant-compiled stuff to remain behind and be picked up by
+    //   the root classloader.
+    private File getOutputDirectory(final HybrisModuleDescriptor moduleDescriptor) {
+        final boolean isWebModule = moduleDescriptor.getWebRoot() != null;
+        final boolean isBackOfficeModule = new File(moduleDescriptor.getRootDirectory(), "backoffice").exists();
         final File outputDirectory;
+
         if (isWebModule) {
             outputDirectory = new File(
                 moduleDescriptor.getWebRoot(),
                 PathUtil.toSystemDependentName("WEB-INF/classes")
             );
-        } else if (isBackofficeModule) {
+        } else if (isBackOfficeModule) {
             outputDirectory = new File(
                 moduleDescriptor.getRootDirectory(),
                 PathUtil.toSystemDependentName("backoffice/classes")
@@ -65,11 +78,6 @@ public class DefaultCompilerOutputPathsConfigurator implements CompilerOutputPat
         } else {
             outputDirectory = new File(moduleDescriptor.getRootDirectory(), "classes");
         }
-
-        compilerModuleExtension.setCompilerOutputPath(VfsUtilCore.pathToUrl(outputDirectory.getAbsolutePath()));
-        compilerModuleExtension.setCompilerOutputPathForTests(VfsUtilCore.pathToUrl(outputDirectory.getAbsolutePath()));
-
-        compilerModuleExtension.setExcludeOutput(true);
-        compilerModuleExtension.inheritCompilerOutputPath(false);
+        return outputDirectory;
     }
 }
