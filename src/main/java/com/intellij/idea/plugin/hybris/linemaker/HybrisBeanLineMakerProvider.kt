@@ -42,7 +42,7 @@ import com.intellij.psi.xml.XmlAttributeValue
 class HybrisBeanLineMakerProvider : RelatedItemLineMarkerProvider() {
 
     override fun collectNavigationMarkers(element: PsiElement,
-                                          result: MutableCollection<in RelatedItemLineMarkerInfo<PsiElement>>) {
+                                          result: MutableCollection<in RelatedItemLineMarkerInfo<*>>) {
         if (element is PsiClass) {
             val project = element.project
 
@@ -78,18 +78,15 @@ class HybrisBeanLineMakerProvider : RelatedItemLineMarkerProvider() {
             list: Collection<PsiElement>
     ) {
         val builder = NavigationGutterIconBuilder.create(HybrisIcons.BEAN).setTargets(list)
-
-        builder.setEmptyPopupText(HybrisI18NBundleUtils.message(
-                "hybris.gutter.navigate.no.matching.beans",
-                *arrayOfNulls<Any>(0)
-        ))
+        val params = arrayOfNulls<Any>(0)
+        builder.setEmptyPopupText(HybrisI18NBundleUtils.message("hybris.gutter.navigate.no.matching.beans", params))
 
         builder.setPopupTitle(HybrisI18NBundleUtils.message(
                 "hybris.gutter.bean.class.navigate.choose.class.title",
-                *arrayOfNulls<Any>(0)
+                params
         ))
         builder.setTooltipText(HybrisI18NBundleUtils.message(
-                "hybris.gutter.item.class.tooltip.navigate.declaration", *arrayOfNulls<Any>(0)
+                "hybris.gutter.item.class.tooltip.navigate.declaration", params
         ))
         result.add(builder.createLineMarkerInfo(psiClass.nameIdentifier!!))
     }

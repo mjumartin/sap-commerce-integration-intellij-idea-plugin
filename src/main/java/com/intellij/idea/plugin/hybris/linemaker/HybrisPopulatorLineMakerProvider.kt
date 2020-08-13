@@ -38,7 +38,7 @@ import org.apache.commons.lang3.StringUtils
 class HybrisPopulatorLineMakerProvider : RelatedItemLineMarkerProvider() {
 
     override fun collectNavigationMarkers(psiClass: PsiElement,
-                                          result: MutableCollection<in RelatedItemLineMarkerInfo<PsiElement>>) {
+                                          result: MutableCollection<in RelatedItemLineMarkerInfo<*>>) {
         if (psiClass is PsiClass) {
             val project = psiClass.project
 
@@ -113,19 +113,11 @@ class HybrisPopulatorLineMakerProvider : RelatedItemLineMarkerProvider() {
             list: Collection<PsiElement>
     ) {
         val builder = NavigationGutterIconBuilder.create(HybrisIcons.Gutter.POPULATOR).setTargets(list)
+        val params = arrayOfNulls<Any>(0)
 
-        builder.setEmptyPopupText(HybrisI18NBundleUtils.message(
-                "hybris.gutter.navigate.no.matching.populators",
-                *arrayOfNulls<Any>(0)
-        ))
-
-        builder.setPopupTitle(HybrisI18NBundleUtils.message(
-                "hybris.gutter.populator.class.navigate.choose.class.title",
-                *arrayOfNulls<Any>(0)
-        ))
-        builder.setTooltipText(HybrisI18NBundleUtils.message(
-                "hybris.gutter.populator.class.tooltip.navigate.declaration", *arrayOfNulls<Any>(0)
-        ))
+        builder.setEmptyPopupText(HybrisI18NBundleUtils.message("hybris.gutter.navigate.no.matching.populators",params))
+        builder.setPopupTitle(HybrisI18NBundleUtils.message("hybris.gutter.populator.class.navigate.choose.class.title",params))
+        builder.setTooltipText(HybrisI18NBundleUtils.message("hybris.gutter.populator.class.tooltip.navigate.declaration", params))
         result.add(builder.createLineMarkerInfo(psiElement))
     }
 

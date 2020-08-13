@@ -18,40 +18,41 @@
 
 package com.intellij.idea.plugin.hybris.impex.view;
 
-import com.intellij.ide.structureView.StructureView;
-import com.intellij.ide.structureView.StructureViewBuilder;
-import com.intellij.ide.structureView.StructureViewModel;
-import com.intellij.ide.structureView.impl.TemplateLanguageStructureViewBuilder;
-import com.intellij.idea.plugin.hybris.impex.psi.ImpexFile;
-import com.intellij.openapi.editor.Editor;
-import com.intellij.openapi.fileEditor.FileEditor;
-import com.intellij.openapi.fileEditor.TextEditor;
-import com.intellij.psi.PsiFile;
-
-import static com.intellij.ide.structureView.impl.StructureViewComposite.StructureViewDescriptor;
-
-/**
- * Created by Martin Zdarsky-Jones (martin.zdarsky@hybris.com) on 6/3/17.
- */
-public class ImpexStructureViewBuilder extends TemplateLanguageStructureViewBuilder implements StructureViewBuilder {
-
-    private final ImpexFile psiFile;
-
-    public ImpexStructureViewBuilder(final ImpexFile psiFile) {
-        super(psiFile);
-        this.psiFile = psiFile;
-    }
-
-    @Override
-    protected StructureViewDescriptor createMainView(
-        final FileEditor fileEditor, final PsiFile mainFile
-    ) {
-        final Editor editor = fileEditor instanceof TextEditor ? ((TextEditor) fileEditor).getEditor() : null;
-        StructureViewModel model = new ImpexStructureViewModel(editor, psiFile);
-        StructureView view = new ImpexStructureViewComponent(fileEditor, model, psiFile.getProject());
-        StructureViewDescriptor descriptor = new StructureViewDescriptor(psiFile.getName(), view, null);
-        return descriptor;
-    }
-
-
-}
+///**
+// * Created by Martin Zdarsky-Jones (martin.zdarsky@hybris.com) on 6/3/17.
+// */
+//public class ImpexStructureViewBuilder extends TemplateLanguageStructureViewBuilder implements StructureViewBuilder {
+//
+//    private final ImpexFile psiFile;
+//
+//    public ImpexStructureViewBuilder(final ImpexFile psiFile) {
+//        super(psiFile);
+//        this.psiFile = psiFile;
+//    }
+//
+//    @Override
+//    protected @Nullable TreeBasedStructureViewBuilder createMainBuilder(
+//        @NotNull final PsiFile psi
+//    ) {
+//        return this;
+//    }
+//
+//    @Override
+//    public @NotNull StructureView createStructureView(
+//        final FileEditor fileEditor, @NotNull final Project project
+//    ) {
+//        final Editor editor = fileEditor instanceof TextEditor ? ((TextEditor) fileEditor).getEditor() : null;
+//        StructureViewModel model = new ImpexStructureViewModel(editor, psiFile);
+//        StructureView view = new ImpexStructureViewComponent(fileEditor, model, project);
+////        StructureViewDescriptor descriptor = new StructureViewDescriptor(psiFile.getName(), view, null);
+////        return descriptor;
+//
+//        return view;
+//    }
+//
+//    @Override
+//    public @NotNull StructureViewModel createStructureViewModel(@Nullable final Editor editor) {
+//        StructureView view = new ImpexStructureViewComponent(editor, model, project);
+//        return super.createStructureViewModel(editor);
+//    }
+//}

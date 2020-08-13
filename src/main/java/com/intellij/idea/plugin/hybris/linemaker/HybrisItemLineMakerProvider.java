@@ -45,19 +45,20 @@ public class HybrisItemLineMakerProvider extends RelatedItemLineMarkerProvider {
     @Override
     protected void collectNavigationMarkers(
         @NotNull final PsiElement element,
-        final Collection<? super RelatedItemLineMarkerInfo> result
+        @NotNull final Collection<? super RelatedItemLineMarkerInfo<?>> result
     ) {
         if (element instanceof PsiClass) {
             final PsiClass psiClass = (PsiClass) element;
             if ((psiClass.getName() != null && psiClass.getName().endsWith("Model") ||
-                 (psiClass.getSuperClass() != null && psiClass.getSuperClass()
-                                                              .getName() != null && psiClass.getSuperClass()
-                                                                                            .getName()
-                                                                                            .startsWith("Generated")))) {
+                 (psiClass.getSuperClass() != null &&
+                  psiClass.getSuperClass().getName() != null &&
+                  psiClass.getSuperClass().getName().startsWith("Generated")
+                 )
+            )) {
 
                 final Collection<XmlElement> list = PsiItemXmlUtil.findTags(psiClass, ITEM_TYPE_TAG_NAME);
                 if (!list.isEmpty()) {
-                    createTargetsWithGutterIcon(result, psiClass, list);
+                    result.add(createTargetsWithGutterIcon(psiClass, list));
                 }
             } else if (psiClass.getImplementsListTypes().length > 0) {
                 final boolean anyMatch = Arrays.stream(psiClass.getImplementsListTypes()).anyMatch(
@@ -68,33 +69,25 @@ public class HybrisItemLineMakerProvider extends RelatedItemLineMarkerProvider {
                     final Collection<XmlElement> list = PsiItemXmlUtil.findTags(psiClass, ENUM_TYPE_TAG_NAME);
 
                     if (!list.isEmpty()) {
-                        createTargetsWithGutterIcon(result, psiClass, list);
+                        result.add(createTargetsWithGutterIcon(psiClass, list));
                     }
                 }
             }
         }
     }
 
-    private void createTargetsWithGutterIcon(
-        final Collection<? super RelatedItemLineMarkerInfo> result,
+    private RelatedItemLineMarkerInfo<PsiElement> createTargetsWithGutterIcon(
         final PsiClass psiClass,
         final Collection<XmlElement> list
     ) {
-        final NavigationGutterIconBuilder builder
-            = NavigationGutterIconBuilder.create(HybrisIcons.TYPE_SYSTEM).setTargets(list);
+        final NavigationGutterIconBuilder builder = NavigationGutterIconBuilder
+            .create(HybrisIcons.TYPE_SYSTEM).setTargets(list);
 
-        builder.setEmptyPopupText(HybrisI18NBundleUtils.message(
-            "hybris.gutter.navigate.no.matching.beans",
-            new Object[0]
-        ));
-
-        builder.setPopupTitle(HybrisI18NBundleUtils.message(
-            "hybris.gutter.bean.class.navigate.choose.class.title",
-            new Object[0]
-        ));
+        builder.setEmptyPopupText(HybrisI18NBundleUtils.message("hybris.gutter.navigate.no.matching.beans"));
+        builder.setPopupTitle(HybrisI18NBundleUtils.message("hybris.gutter.bean.class.navigate.choose.class.title"));
         builder.setTooltipText(HybrisI18NBundleUtils.message(
-            "hybris.gutter.item.class.tooltip.navigate.declaration", new Object[0]
+            "hybris.gutter.item.class.tooltip.navigate.declaration"
         ));
-        result.add(builder.createLineMarkerInfo(psiClass.getNameIdentifier()));
+        return builder.createLineMarkerInfo(psiClass.getNameIdentifier());
     }
 }

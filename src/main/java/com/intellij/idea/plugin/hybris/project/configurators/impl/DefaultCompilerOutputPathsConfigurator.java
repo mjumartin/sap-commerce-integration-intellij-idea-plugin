@@ -64,8 +64,9 @@ public class DefaultCompilerOutputPathsConfigurator implements CompilerOutputPat
         final boolean isWebModule = moduleDescriptor.getWebRoot() != null;
         final boolean isBackOfficeModule = new File(moduleDescriptor.getRootDirectory(), "backoffice").exists();
         final File outputDirectory;
+        final boolean allowWebModuleOutputToWebInf = false;
 
-        if (isWebModule) {
+        if (allowWebModuleOutputToWebInf && isWebModule) {
             outputDirectory = new File(
                 moduleDescriptor.getWebRoot(),
                 PathUtil.toSystemDependentName("WEB-INF/classes")

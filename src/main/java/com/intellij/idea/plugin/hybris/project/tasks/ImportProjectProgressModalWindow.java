@@ -201,6 +201,7 @@ public class ImportProjectProgressModalWindow extends Task.Modal {
         int counter = 0;
 
         for (HybrisModuleDescriptor moduleDescriptor : allModules) {
+
             indicator.setText(HybrisI18NBundleUtils.message(
                 "hybris.project.import.module.import",
                 moduleDescriptor.getName()
