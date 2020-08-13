@@ -18,17 +18,23 @@
 
 package com.intellij.idea.plugin.hybris.impex.view;
 
-///**
-// * Created by Martin Zdarsky-Jones (martin.zdarsky@hybris.com) on 6/3/17.
-// */
-//public class ImpexStructureViewBuilderProvider implements PsiStructureViewFactory {
-//
-//    @Nullable
-//    @Override
-//    public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
-//        if (psiFile instanceof ImpexFile) {
-//            return new ImpexStructureViewBuilder((ImpexFile) psiFile);
-//        }
-//        return null;
-//    }
-//}
+import com.intellij.ide.structureView.StructureViewBuilder;
+import com.intellij.idea.plugin.hybris.impex.psi.ImpexFile;
+import com.intellij.lang.PsiStructureViewFactory;
+import com.intellij.psi.PsiFile;
+import org.jetbrains.annotations.Nullable;
+
+/**
+ * Created by Martin Zdarsky-Jones (martin.zdarsky@hybris.com) on 6/3/17.
+ */
+public class ImpexStructureViewBuilderProvider implements PsiStructureViewFactory {
+
+    @Nullable
+    @Override
+    public StructureViewBuilder getStructureViewBuilder(final PsiFile psiFile) {
+        if (psiFile instanceof ImpexFile) {
+            return new ImpexStructureViewBuilder((ImpexFile) psiFile);
+        }
+        return null;
+    }
+}

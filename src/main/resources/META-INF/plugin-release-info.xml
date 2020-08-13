@@ -4,7 +4,7 @@
     <version>2020.102</version>
 
     <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
-    <idea-version since-build="2020.02"/>
+    <idea-version since-build="IU-202.6397.94"/>
 
     <vendor>Martin</vendor>
 
