@@ -1,10 +1,10 @@
 <idea-plugin>
     <id>com.intellij.idea.plugin.commerce.integration.lessbloat</id>
     <name>SAP Hybris Light</name>
-    <version>2020.101</version>
+    <version>2020.102</version>
 
     <!-- http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html -->
-    <idea-version since-build="201.6668"/>
+    <idea-version since-build="2020.02"/>
 
     <vendor>Martin</vendor>
 
@@ -17,6 +17,10 @@
 
     <change-notes>
         <![CDATA[
+            <h2>Changes in 2020.102</h2>
+            <ul>
+                <li>Support 2020.02 hopefully</li>
+            </ul>
             <h2>Changes in 2020.100</h2>
             <ul>
                 <li>Updated to 2020 and removed some dependencies</li>
