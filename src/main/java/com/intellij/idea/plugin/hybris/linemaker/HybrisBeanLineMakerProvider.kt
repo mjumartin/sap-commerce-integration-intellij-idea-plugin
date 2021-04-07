@@ -79,14 +79,15 @@ class HybrisBeanLineMakerProvider : RelatedItemLineMarkerProvider() {
     ) {
         val builder = NavigationGutterIconBuilder.create(HybrisIcons.BEAN).setTargets(list)
         val params = arrayOfNulls<Any>(0)
-        builder.setEmptyPopupText(HybrisI18NBundleUtils.message("hybris.gutter.navigate.no.matching.beans", params))
+        builder.setEmptyPopupText(HybrisI18NBundleUtils.message(
+                "hybris.gutter.navigate.no.matching.beans"
+        ))
 
         builder.setPopupTitle(HybrisI18NBundleUtils.message(
-                "hybris.gutter.bean.class.navigate.choose.class.title",
-                params
+                "hybris.gutter.bean.class.navigate.choose.class.title"
         ))
         builder.setTooltipText(HybrisI18NBundleUtils.message(
-                "hybris.gutter.item.class.tooltip.navigate.declaration", params
+                "hybris.gutter.item.class.tooltip.navigate.declaration"
         ))
         result.add(builder.createLineMarkerInfo(psiClass.nameIdentifier!!))
     }

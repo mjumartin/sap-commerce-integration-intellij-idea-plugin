@@ -113,11 +113,10 @@ class HybrisPopulatorLineMakerProvider : RelatedItemLineMarkerProvider() {
             list: Collection<PsiElement>
     ) {
         val builder = NavigationGutterIconBuilder.create(HybrisIcons.Gutter.POPULATOR).setTargets(list)
-        val params = arrayOfNulls<Any>(0)
 
-        builder.setEmptyPopupText(HybrisI18NBundleUtils.message("hybris.gutter.navigate.no.matching.populators",params))
-        builder.setPopupTitle(HybrisI18NBundleUtils.message("hybris.gutter.populator.class.navigate.choose.class.title",params))
-        builder.setTooltipText(HybrisI18NBundleUtils.message("hybris.gutter.populator.class.tooltip.navigate.declaration", params))
+        builder.setEmptyPopupText(HybrisI18NBundleUtils.message("hybris.gutter.navigate.no.matching.populators"))
+        builder.setPopupTitle(HybrisI18NBundleUtils.message("hybris.gutter.populator.class.navigate.choose.class.title"))
+        builder.setTooltipText(HybrisI18NBundleUtils.message("hybris.gutter.populator.class.tooltip.navigate.declaration"))
         result.add(builder.createLineMarkerInfo(psiElement))
     }
 

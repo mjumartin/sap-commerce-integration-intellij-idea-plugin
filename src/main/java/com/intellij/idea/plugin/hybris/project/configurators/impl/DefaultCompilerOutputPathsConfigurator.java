@@ -48,37 +48,43 @@ public class DefaultCompilerOutputPathsConfigurator implements CompilerOutputPat
             CompilerModuleExtension.class
         );
 
-        final File outputDirectory = getOutputDirectory(moduleDescriptor);
+        final File outputDirectory = getOutputDirectory(moduleDescriptor, false);
+        final File outputDirectoryForTest = getOutputDirectory(moduleDescriptor, true);
         compilerModuleExtension.setCompilerOutputPath(VfsUtilCore.pathToUrl(outputDirectory.getAbsolutePath()));
-        compilerModuleExtension.setCompilerOutputPathForTests(VfsUtilCore.pathToUrl(outputDirectory.getAbsolutePath()));
+        compilerModuleExtension.setCompilerOutputPathForTests(VfsUtilCore.pathToUrl(outputDirectoryForTest.getAbsolutePath()));
 
         compilerModuleExtension.setExcludeOutput(true);
-        compilerModuleExtension.inheritCompilerOutputPath(false);
+        compilerModuleExtension.inheritCompilerOutputPath(true);
     }
 
     // TODO: There is a problem here. For web modules, ant compiles their non-web src folder
     //   into /classes and the web/src into WEB-INF/classes. IntelliJ will put all of in into
     //   WEB-INF/classes which will cause the ant-compiled stuff to remain behind and be picked up by
     //   the root classloader.
-    private File getOutputDirectory(final HybrisModuleDescriptor moduleDescriptor) {
+    private File getOutputDirectory(final HybrisModuleDescriptor moduleDescriptor, final boolean forTest) {
         final boolean isWebModule = moduleDescriptor.getWebRoot() != null;
         final boolean isBackOfficeModule = new File(moduleDescriptor.getRootDirectory(), "backoffice").exists();
+        final boolean noSrcFolder = !new File(moduleDescriptor.getRootDirectory(), "src").exists();
         final File outputDirectory;
-        final boolean allowWebModuleOutputToWebInf = false;
 
-        if (allowWebModuleOutputToWebInf && isWebModule) {
+        if (noSrcFolder && isWebModule) {
             outputDirectory = new File(
                 moduleDescriptor.getWebRoot(),
-                PathUtil.toSystemDependentName("WEB-INF/classes")
+                PathUtil.toSystemDependentName("WEB-INF/" + getClassesFolder(forTest))
             );
         } else if (isBackOfficeModule) {
             outputDirectory = new File(
                 moduleDescriptor.getRootDirectory(),
-                PathUtil.toSystemDependentName("backoffice/classes")
+                PathUtil.toSystemDependentName("backoffice/" + getClassesFolder(forTest))
             );
         } else {
-            outputDirectory = new File(moduleDescriptor.getRootDirectory(), "classes");
+            outputDirectory = new File(moduleDescriptor.getRootDirectory(),  getClassesFolder(forTest));
         }
         return outputDirectory;
+    }
+
+    @NotNull
+    private String getClassesFolder(final boolean forTest) {
+        return forTest ? "testclasses" : "classes";
     }
 }

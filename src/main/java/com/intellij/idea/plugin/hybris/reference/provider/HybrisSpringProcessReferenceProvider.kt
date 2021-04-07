@@ -48,7 +48,7 @@ class HybrisSpringProcessReferenceProvider : PsiReferenceProvider() {
                 val result = mutableSetOf<SpringBeanPointer<CommonSpringBean>>()
                 val allModels = SpringManager.getInstance(project).getAllModels(module)
                 allModels.forEach { model ->
-                    val pointer = SpringModelSearchers.findBean(model, name)
+                    val pointer = SpringModelSearchers.findBean(model, name) as? SpringBeanPointer<CommonSpringBean>
                     if (pointer != null) {
                         result.add(pointer)
                     }
@@ -68,4 +68,3 @@ class HybrisSpringProcessReferenceProvider : PsiReferenceProvider() {
         return arrayOf(reference)
     }
 }
-

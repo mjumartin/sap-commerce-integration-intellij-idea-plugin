@@ -80,19 +80,11 @@ public class DefaultHybrisProjectImportBuilder extends AbstractHybrisProjectImpo
     @GuardedBy("lock")
     protected volatile HybrisProjectDescriptor hybrisProjectDescriptor;
     protected volatile boolean refresh;
-    protected VirtualFileSystemService virtualFileSystemService;
     private List<HybrisModuleDescriptor> moduleList;
     private List<HybrisModuleDescriptor> hybrisModulesToImport;
 
-    protected VirtualFileSystemService getVirtualFileSystemService() {
-        if (virtualFileSystemService == null) {
-            virtualFileSystemService = ServiceManager.getService(VirtualFileSystemService.class);
-        }
-        return virtualFileSystemService;
-    }
-
     public ConfiguratorFactory getConfiguratorFactory() {
-        if (!Extensions.getRootArea().hasExtensionPoint(HybrisConstants.CONFIGURATOR_FACTORY_ID)) {
+        if (!ApplicationManager.getApplication().getExtensionArea().hasExtensionPoint(HybrisConstants.CONFIGURATOR_FACTORY_ID)) {
             return ServiceManager.getService(DefaultConfiguratorFactory.class);
         }
 
@@ -298,7 +290,7 @@ public class DefaultHybrisProjectImportBuilder extends AbstractHybrisProjectImpo
         Collections.sort(alreadyExistingModuleFiles);
 
         try {
-            getVirtualFileSystemService().removeAllFiles(alreadyExistingModuleFiles);
+            ApplicationManager.getApplication().getService(VirtualFileSystemService.class).removeAllFiles(alreadyExistingModuleFiles);
         } catch (IOException e) {
             LOG.error("Can not remove old module files.", e);
         }

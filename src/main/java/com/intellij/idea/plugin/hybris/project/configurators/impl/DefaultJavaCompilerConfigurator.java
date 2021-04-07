@@ -11,7 +11,6 @@ import com.intellij.idea.plugin.hybris.project.descriptors.HybrisProjectDescript
 import com.intellij.idea.plugin.hybris.project.descriptors.PlatformHybrisModuleDescriptor;
 import com.intellij.openapi.compiler.options.ExcludeEntryDescription;
 import com.intellij.openapi.compiler.options.ExcludesConfiguration;
-import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.jps.model.java.compiler.JavaCompilers;
@@ -24,8 +23,6 @@ import java.util.Optional;
 import static com.intellij.idea.plugin.hybris.common.utils.CollectionUtils.emptyCollectionIfNull;
 
 public class DefaultJavaCompilerConfigurator implements JavaCompilerConfigurator {
-
-    private static final Logger logger = Logger.getInstance(DefaultJavaCompilerConfigurator.class);
 
     @Override
     public void configure(
@@ -41,26 +38,8 @@ public class DefaultJavaCompilerConfigurator implements JavaCompilerConfigurator
 
         final CompilerConfigurationImpl configuration = (CompilerConfigurationImpl) CompilerConfiguration.getInstance(
             project);
-        final ExcludesConfiguration exlusions = configuration.getExcludedEntriesConfiguration();
-        addRecursiveExclusion(project, exlusions, "ext-accelerator");
-        addRecursiveExclusion(project, exlusions, "ext-addon");
-        addRecursiveExclusion(project, exlusions, "ext-atdd");
-        addRecursiveExclusion(project, exlusions, "ext-atddtests");
-        addRecursiveExclusion(project, exlusions, "ext-backoffice");
-        addRecursiveExclusion(project, exlusions, "ext-channel");
-        addRecursiveExclusion(project, exlusions, "ext-cockpit");
-        addRecursiveExclusion(project, exlusions, "ext-commerce");
-        addRecursiveExclusion(project, exlusions, "ext-content");
-        addRecursiveExclusion(project, exlusions, "ext-customer-experience");
-        addRecursiveExclusion(project, exlusions, "ext-data");
-        addRecursiveExclusion(project, exlusions, "ext-eventtracking");
-        addRecursiveExclusion(project, exlusions, "ext-integration");
-        addRecursiveExclusion(project, exlusions, "ext-platform-backoffice");
-        addRecursiveExclusion(project, exlusions, "ext-platform-optional");
-        addRecursiveExclusion(project, exlusions, "ext-smartedit");
-        addRecursiveExclusion(project, exlusions, "ext-supportability");
-        addRecursiveExclusion(project, exlusions, "ext-template");
-        addRecursiveExclusion(project, exlusions, "ext-webservices");
+        final ExcludesConfiguration exclusions = configuration.getExcludedEntriesConfiguration();
+        addRecursiveExclusion(project, exclusions, "modules");
 
         if (buildCompilerPropValue.equals("org.eclipse.jdt.core.JDTCompilerAdapter")) {
             final Optional<BackendCompiler> eclipseCompiler = emptyCollectionIfNull(
